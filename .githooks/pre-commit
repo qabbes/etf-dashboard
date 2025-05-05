@@ -1,0 +1,30 @@
+#!/bin/bash
+
+echo "🔄 Pre-commit hook running..."
+
+# Step 1: Replace {{DATE}} in progress.md
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i '' "s/{{DATE}}/$(date +'%Y-%m-%d')/" progress.md
+else
+  sed -i "s/{{DATE}}/$(date +'%d-%m-%Y')/" progress.md
+fi
+echo "✅ Updated progress.md date to $(date +'%Y-%m-%d')"
+
+# Step 2: Optional secret scanning
+if command -v detect-secrets >/dev/null 2>&1; then
+  echo "🔍 Running detect-secrets scan..."
+  detect-secrets scan > .secrets.baseline
+  echo "✅ No obvious secrets found."
+elif command -v git-secrets >/dev/null 2>&1; then
+  echo "🔍 Running git-secrets scan..."
+  git secrets --scan
+  if [[ $? -ne 0 ]]; then
+    echo "❌ Secret detected! Commit aborted."
+    exit 1
+  fi
+else
+  echo "⚠️ No secret scanning tool found. Skipping scan."
+fi
+
+echo "✅ Pre-commit hook complete"
+
