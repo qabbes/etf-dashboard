@@ -4,11 +4,11 @@ echo "🔄 Pre-commit hook running..."
 
 # Step 1: Replace {{DATE}} in progress.md
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  sed -i '' "s/{{DATE}}/$(date +'%Y-%m-%d')/" progress.md
+  sed -i '' "s/{{DATE}}/$(date +'%d-%m-%Y')/" progress.md
 else
   sed -i "s/{{DATE}}/$(date +'%d-%m-%Y')/" progress.md
 fi
-echo "✅ Updated progress.md date to $(date +'%Y-%m-%d')"
+echo "✅ Updated progress.md date to $(date +'%d-%m-%Y')"
 
 # Step 2: Optional secret scanning
 if command -v detect-secrets >/dev/null 2>&1; then
@@ -27,4 +27,5 @@ else
 fi
 
 echo "✅ Pre-commit hook complete"
+
 

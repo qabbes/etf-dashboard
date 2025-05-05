@@ -65,13 +65,10 @@ etf-dashboard/
 - Node.js & npm/yarn installed (for frontend)
 
 ### Setup
-
-#### 1. Infrastructure
-#
+## 🛠️ One-time Setup (after clone)
+run setup.sh (set your own tracked .githooks)
 ```bash
-cd infrastructure
-terraform init
-terraform apply
+bash setup.sh
 ```
 ## 🧪 To Do
 
