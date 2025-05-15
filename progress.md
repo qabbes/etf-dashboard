@@ -62,4 +62,4 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 
 ---
 
-_Last updated: 05-05-2025
+_Last updated: 15-05-2025
