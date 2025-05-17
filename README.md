@@ -2,7 +2,7 @@
 
 A full-stack application for tracking and visualizing Exchange-Traded Fund (ETF) data in near real-time. Built to showcase web scraping, cloud infrastructure automation with Terraform, and frontend dashboard design.
 
-## 🧠 Project Overview
+## Project Overview
 
 The ETF Dashboard scrapes ETF data from selected sources, stores the data in AWS S3, and displays it in a user-friendly frontend dashboard. The backend is fully serverless, leveraging AWS Lambda, API Gateway, and S3.
 
@@ -19,11 +19,11 @@ The ETF Dashboard scrapes ETF data from selected sources, stores the data in AWS
 - **React** – Interactive dashboard UI
 - **Hosted on EC2** – Simplified frontend hosting
 
-## 🗺️ Architecture Diagram
+## Architecture Diagram
 
 ![ETF Dashboard Architecture2](assets/archx3.svg)
 
-## 🔁 Data Flow
+## Data Flow
 
 1. Lambda scrapes ETF data on a schedule or trigger.
 2. Scraped data is saved to an S3 bucket.
@@ -31,7 +31,7 @@ The ETF Dashboard scrapes ETF data from selected sources, stores the data in AWS
 4. Frontend dashboard fetches and displays the latest data.
 
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 etf-dashboard/
@@ -57,7 +57,7 @@ etf-dashboard/
 
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Terraform installed
