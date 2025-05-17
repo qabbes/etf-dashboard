@@ -4,24 +4,23 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 
 ---
 
-## ✅ Core Architecture
+## Core Architecture
 
 - [x] Define initial architecture diagram (S3 → Lambda → DynamoDB → React dashboard)
 - [x] Choose tech stack and hosting method
-- [ ] Define Terraform remote backend (S3 + DynamoDB)
-- [ ] Create Terraform module structure
+- [x] Define Terraform remote backend (S3 + DynamoDB)
+- [x] Create Terraform module structure
 
 ---
 
-## 🔧 Week 1 (Infra Setup Focus)
+## Week 1 (Infra Setup Focus)
 
-- [ ] Create Terraform backend (S3 + DynamoDB)
-- [ ] Write provider & backend configuration
+- [x] Create Terraform backend (S3 + DynamoDB)
+- [x] Write provider & backend configuration
 - [ ] Terraform modules for:
-  - [ ] S3 bucket to store scraped ETF data
+  - [x] S3 bucket to store scraped ETF data
   - [ ] Lambda function placeholder
-  - [ ] DynamoDB table to store structured data
-- [ ] Initial `terraform plan` + `apply` (non-destructive)
+- [x] Initial `terraform plan` + `apply` (non-destructive)
 
 ---
 
@@ -62,4 +61,4 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 
 ---
 
-_Last updated: 15-05-2025
+_Last updated: 17-05-2025
