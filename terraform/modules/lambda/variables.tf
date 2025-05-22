@@ -1,8 +1,8 @@
 variable "lambda_function_name" {
-  default = "scraper_lambda"
+  default = "etf_scraper_lambda"
 }
 variable "handler" {
-  default = "lambda_function.lambda_handler"
+  default = "scraper_lambda.lambda_handler"
 }
 variable "runtime" {
   default = "python3.11"
