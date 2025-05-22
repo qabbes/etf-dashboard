@@ -1,18 +1,36 @@
 data "archive_file" "scraper_zip_file" {
   type        = "zip"
-  source_dir  = "${path.module}/../../scraper"
-  output_path = "${path.module}/../../scraper/scraper_lambda.zip"
+  source_dir  = "${path.module}/../../../scraper"
+  output_path = "${path.module}/../../../scraper/scraper_lambda.zip"
 }
 
 resource "aws_iam_role" "lambda_role" {
   name               = "lambda_role"
   assume_role_policy = file("${path.module}/policies/lambda-policy.json")
 }
-
+#
 resource "aws_iam_policy" "s3_access_policy" {
   name        = "lambda_s3_etf_data_access"
   description = "Allows Lambda to read, write and list objects in the ETF data bucket"
-  policy      = file("${path.module}/policies/s3-access-policy.json")
+  
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket",
+          "s3:DeleteObject"
+        ],
+        Resource = [
+          "arn:aws:s3:::${var.bucket_name}",
+          "arn:aws:s3:::${var.bucket_name}/*"
+        ]
+      }
+    ]
+  })
 }
 
 # Attach the AWSLambdaBasicExecutionRole policy to the Lambda role
