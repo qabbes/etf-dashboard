@@ -1,5 +1,12 @@
 module "scraped_etf_data" {
   source      = "./modules/s3"
   bucket_name = "scraped-etf-data-qabbes"
-  
+
+}
+
+module "etf_scraper_lambda" {
+  source               = "./modules/lambda"
+  lambda_function_name = "etf_scraper_lambda"
+  # The S3 bucket name from the S3 module output
+  bucket_name = module.scraped_etf_data.bucket_name
 }

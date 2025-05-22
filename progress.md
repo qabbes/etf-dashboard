@@ -17,16 +17,16 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 
 - [x] Create Terraform backend (S3 + DynamoDB)
 - [x] Write provider & backend configuration
-- [ ] Terraform modules for:
+- [x] Terraform modules for:
   - [x] S3 bucket to store scraped ETF data
-  - [ ] Lambda function placeholder
+  - [x] Lambda function placeholder
 - [x] Initial `terraform plan` + `apply` (non-destructive)
 
 ---
 
 ## 📦 Week 2 (Lambda + Data Flow)
 
-- [ ] Write simple Python Lambda function (dummy data)
+- [ ] Write simple Python Lambda function (dummy data) #TODO
 - [ ] Configure S3 event to trigger Lambda
 - [ ] Store results in DynamoDB
 - [ ] Add basic logging + output variables

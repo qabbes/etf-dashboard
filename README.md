@@ -27,7 +27,7 @@ The ETF Dashboard scrapes ETF data from selected sources, stores the data in AWS
 
 1. Lambda scrapes ETF data on a schedule or trigger.
 2. Scraped data is saved to an S3 bucket.
-3. (Optional) S3 triggers a second Lambda to notify the frontend via webhook or update cache.
+3. S3 triggers a second Lambda to notify the frontend via webhook or update cache.
 4. Frontend dashboard fetches and displays the latest data.
 
 
