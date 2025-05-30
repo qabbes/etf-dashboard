@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.98.0"
     }
+     null = {
+      source  = "hashicorp/null"
+      version = "~> 3.0"
+    }
   }
 }
 

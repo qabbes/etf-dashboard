@@ -1,7 +1,31 @@
-data "archive_file" "scraper_zip_file" {
-  type        = "zip"
-  source_dir  = "${path.module}/../../../scraper"
-  output_path = "${path.module}/../../../scraper/scraper_lambda.zip"
+resource "null_resource" "lambda_dependencies" {
+  triggers = {
+    # Re-run when the Lambda code changes
+    source_code_hash = filemd5("${path.module}/../../../scraper/scraper_lambda.py")
+    requirements_hash = filemd5("${path.module}/../../../scraper/requirements.txt")
+  }
+
+  provisioner "local-exec" {
+    command = "cd ${path.module}/../../../scraper && bash package-lambda.sh"
+    interpreter = ["bash", "-c"]
+  }
+}
+
+# Wait for zip file to be created before calculating hash
+resource "null_resource" "lambda_zip_waiter" {
+  depends_on = [null_resource.lambda_dependencies]
+
+  # This resource exists only to create a dependency chain
+  triggers = {
+    # Always run after lambda_dependencies
+    dependency_id = null_resource.lambda_dependencies.id
+  }
+}
+
+locals {
+  # Only calculate this after the zip file exists
+  lambda_zip_path = "${path.module}/../../../scraper/scraper_lambda.zip"
+  source_code_hash = null_resource.lambda_zip_waiter.id != "" ? filebase64sha256(local.lambda_zip_path) : ""
 }
 
 resource "aws_iam_role" "lambda_role" {
@@ -52,8 +76,8 @@ resource "aws_lambda_function" "scraper_lambda" {
   handler          = var.handler
   runtime          = var.runtime
   role             = aws_iam_role.lambda_role.arn
-  filename         = data.archive_file.scraper_zip_file.output_path
-  source_code_hash = data.archive_file.scraper_zip_file.output_base64sha256
+  filename         = local.lambda_zip_path
+  source_code_hash = local.source_code_hash
   timeout          = var.timeout
   memory_size      = var.memory_size
 
@@ -63,6 +87,7 @@ resource "aws_lambda_function" "scraper_lambda" {
     }
   }
   depends_on = [
+    null_resource.lambda_dependencies,
     aws_iam_role_policy_attachment.lambda_execution_role_attachment,
     aws_iam_role_policy_attachment.lambda_s3_policy_attachment
   ]
