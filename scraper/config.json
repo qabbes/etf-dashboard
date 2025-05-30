@@ -1,0 +1,8 @@
+{
+    "url": "https://finance.yahoo.com/quote/ESE.PA/",
+    "price_selector_testid": "qsp-price",
+    "symbol": "ESE.PA",
+    "s3_bucket": "scraped-etf-data-qabbes",
+    "s3_prefix": "prices"
+  }
+  
