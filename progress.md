@@ -26,9 +26,9 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 
 ## 📦 Week 2 (Lambda + Data Flow)
 
-- [ ] Write simple Python Lambda function (dummy data) #TODO
-- [ ] Configure S3 event to trigger Lambda
-- [ ] Store results in DynamoDB
+- [x] Write simple Python Lambda function (dummy data) #TODO
+- [x] Write actual scraping script (think about object storage and data structure)
+- [ ] Configure EventBridge  to trigger Lambda
 - [ ] Add basic logging + output variables
 - [ ] Create an `etl/` folder for data processing logic
 
@@ -61,4 +61,4 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 
 ---
 
-_Last updated: 30-05-2025
+_Last updated: 31-05-2025

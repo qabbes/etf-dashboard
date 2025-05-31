@@ -34,20 +34,38 @@ def lambda_handler(event=None, context=None):
     price = price_tag.text
     timestamp = datetime.now().isoformat()
 
-    data = {
-        "symbol": symbol,
-        "price": price,
-        "timestamp": timestamp
+    new_data = {
+        "timestamp": timestamp,
+        "price": price
     }
 
+    # S3 key - one file per symbol
+    key = f"{s3_prefix}/{symbol}.json"
     s3 = boto3.client("s3")
-    key = f"{s3_prefix}/{symbol}-{timestamp}.json"
 
+    # Try to get existing data
+    try:
+        existing_data = s3.get_object(Bucket=s3_bucket, Key=key)
+        existing_data = json.loads(
+            existing_data['Body'].read().decode('utf-8'))
+
+        # If it's already an array, append to it
+        if isinstance(existing_data, list):
+            existing_data.append(new_data)
+        else:
+            existing_data = [existing_data, new_data]
+
+    except s3.exceptions.NoSuchKey:
+        existing_data = [new_data]
+    except Exception as e:
+        return {"error": f"Failed to read existing data from S3: {e}"}
+
+    # Upload updated data back to S3
     try:
         s3.put_object(
             Bucket=s3_bucket,
             Key=key,
-            Body=json.dumps(data),
+            Body=json.dumps(existing_data),
             ContentType="application/json"
         )
     except Exception as e:
@@ -57,5 +75,6 @@ def lambda_handler(event=None, context=None):
         "status": "success",
         "price": price,
         "timestamp": timestamp,
-        "s3_key": key
+        "s3_key": key,
+        "entry_count": len(existing_data)
     }
