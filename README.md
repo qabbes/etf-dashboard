@@ -70,6 +70,18 @@ run setup.sh (set your own tracked .githooks)
 ```bash
 bash setup.sh
 ```
+Then you need to zip the lambda script with its dependencies by running the package-lambda.sh inside /scraper
+```bash
+bash package-lambda.sh
+```
+Follow-up by running terraform commands inside the infrastructure folder /terraform
+```bash
+terraform init
+terraform plan
+terraform apply
+```
+
+
 ## 🧪 To Do
 
 - [ ]  Add pagination and filtering on frontend

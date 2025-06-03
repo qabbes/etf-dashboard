@@ -1,6 +1,6 @@
 # 📈 ETF Tracker Project — Progress & Roadmap
 
-This document tracks progress on building a cloud-native ETF tracker using Terraform, AWS (S3, Lambda, DynamoDB), and React. The goal is to showcase DevOps, Infra-as-Code, and modern frontend skills.
+This document tracks progress on building a cloud-native ETF tracker using Terraform, AWS (S3, Lambda), and React. The goal is to showcase DevOps, Infra-as-Code, and modern frontend skills.
 
 ---
 
