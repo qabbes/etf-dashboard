@@ -3,3 +3,4 @@ terraform.tfstate
 terraform.tfstate.backup
 *.tfstate.*
 crash.log
+scraper_lambda.zip

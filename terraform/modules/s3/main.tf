@@ -13,3 +13,27 @@ resource "aws_s3_bucket" "scraped_etf_data" {
   }
   
 }
+
+resource "aws_s3_bucket_policy" "allow_readonly_access_for_prices" {
+  bucket = aws_s3_bucket.scraped_etf_data.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid: "AllowPublicReadOnlyForPrices",
+        Effect = "Allow",
+        Principal = "*",
+        Action = "s3:GetObject",
+        Resource = "${aws_s3_bucket.scraped_etf_data.arn}/prices/*"
+      }
+    ]
+  })
+}
+
+resource "aws_s3_bucket_public_access_block" "public_access" {
+  bucket = aws_s3_bucket.scraped_etf_data.id
+  block_public_acls       = true
+  block_public_policy     = false
+  ignore_public_acls      = true
+  restrict_public_buckets = false
+}
