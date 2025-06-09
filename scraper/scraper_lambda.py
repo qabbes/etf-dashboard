@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import boto3
 import json
 from datetime import datetime
+from botocore.exceptions import ClientError
 
 
 def lambda_handler(event=None, context=None):
@@ -10,71 +11,71 @@ def lambda_handler(event=None, context=None):
     with open("config.json") as file:
         config = json.load(file)
 
-    url = config["url"]
-    price_testid = config["price_selector_testid"]
-    symbol = config["symbol"]
+    s3 = boto3.client("s3")
     s3_bucket = config["s3_bucket"]
     s3_prefix = config["s3_prefix"]
 
-    headers = {
-        "User-Agent": "Mozilla/5.0"
-    }
+    results = []
+    last_entry_count = 0
 
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-    except requests.RequestException as e:
-        return {"error": f"Failed to fetch page: {e}"}
+    for entry in config["symbols"]:
+        symbol = entry["symbol"]
+        url = entry["url"]
+        key = f"{s3_prefix}/{symbol}.json"
+        headers = {"User-Agent": "Mozilla/5.0"}
 
-    soup = BeautifulSoup(response.text, "html.parser")
-    price_tag = soup.find("span", attrs={"data-testid": price_testid})
-    if not price_tag:
-        return {"error": "Price span not found"}
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+        except requests.RequestException as e:
+            results.append({symbol: f"Failed to fetch: {e}"})
+            continue
 
-    price = price_tag.text
-    timestamp = datetime.now().isoformat()
+        soup = BeautifulSoup(response.text, "html.parser")
+        price_tag = soup.find("span", class_=entry["price_selector_class"])
+        if not price_tag:
+            results.append({symbol: "Price tag not found"})
+            continue
 
-    new_data = {
-        "timestamp": timestamp,
-        "price": price
-    }
+        price = float(price_tag.text.strip())
+        timestamp = datetime.now().isoformat()
+        new_entry = {"timestamp": timestamp, "price": price}
 
-    # S3 key - one file per symbol
-    key = f"{s3_prefix}/{symbol}.json"
-    s3 = boto3.client("s3")
+        # Try to get existing data
+        try:
+            response_obj = s3.get_object(Bucket=s3_bucket, Key=key)
+            existing_data = json.loads(
+                response_obj['Body'].read().decode('utf-8'))
 
-    # Try to get existing data
-    try:
-        existing_data = s3.get_object(Bucket=s3_bucket, Key=key)
-        existing_data = json.loads(
-            existing_data['Body'].read().decode('utf-8'))
+            # If it's already an array, append to it
+            if isinstance(existing_data, list):
+                existing_data.append(new_entry)
+            else:
+                existing_data = [existing_data, new_entry]
+            last_entry_count = len(existing_data)
 
-        # If it's already an array, append to it
-        if isinstance(existing_data, list):
-            existing_data.append(new_data)
-        else:
-            existing_data = [existing_data, new_data]
+        except ClientError as e:
+            if e.response["Error"]["Code"] == "NoSuchKey":
+                existing_data = []
+            else:
+                results.append({symbol: f"Failed to read S3: {e}"})
+                continue
 
-    except s3.exceptions.NoSuchKey:
-        existing_data = [new_data]
-    except Exception as e:
-        return {"error": f"Failed to read existing data from S3: {e}"}
-
-    # Upload updated data back to S3
-    try:
-        s3.put_object(
-            Bucket=s3_bucket,
-            Key=key,
-            Body=json.dumps(existing_data),
-            ContentType="application/json"
-        )
-    except Exception as e:
-        return {"error": f"Failed to upload to S3: {e}"}
+        # Upload updated data back to S3
+        try:
+            s3.put_object(
+                Bucket=s3_bucket,
+                Key=key,
+                Body=json.dumps(existing_data),
+                ContentType="application/json"
+            )
+            results.append({symbol: f"Success ({price})"})
+        except Exception as e:
+            results.append({symbol: f"Failed to upload: {e}"})
 
     return {
         "status": "success",
-        "price": price,
+        "summary": results,
         "timestamp": timestamp,
-        "s3_key": key,
-        "entry_count": len(existing_data)
+        "entry_count": last_entry_count
     }

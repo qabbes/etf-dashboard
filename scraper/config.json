@@ -1,8 +1,16 @@
 {
-    "url": "https://finance.yahoo.com/quote/ESE.PA/",
-    "price_selector_testid": "qsp-price",
-    "symbol": "ESE.PA",
-    "s3_bucket": "scraped-etf-data-qabbes",
-    "s3_prefix": "prices"
-  }
-  
+  "symbols": [
+    {
+      "symbol": "ESE.PA",
+      "url": "https://www.boursedirect.fr/fr/marche/euronext-paris/theam-easyetf-bnp-paribas-easy-FR0011550185-ESE-EUR-XPAR/seance",
+      "price_selector_class": "quotation-last bd-streaming-select-value-last"
+    },
+    {
+      "symbol": "CSX5.AS",
+      "url": "https://www.boursedirect.fr/fr/marche/euronext-amsterdam/ishares-core-euro-stoxx-50-uci-IE00B53L3W79-CSX5-EUR-XAMS/seance",
+      "price_selector_class": "quotation-last bd-streaming-select-value-last"
+    }
+  ],
+  "s3_bucket": "scraped-etf-data-qabbes",
+  "s3_prefix": "prices"
+}
