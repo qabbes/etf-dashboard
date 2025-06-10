@@ -10,6 +10,7 @@ scraper_lambda.zip
 
 # Frontend/Node.js
 # Logs
+.env
 logs
 *.log
 npm-debug.log*
