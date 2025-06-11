@@ -17,3 +17,13 @@ variable "bucket_name" {
   description = "The name of the S3 bucket to store scraped ETF data"
   type        = string
 }
+variable "business_hours_start" {
+  description = "Start hour for ETF price checks (24-hour format)"
+  type        = number
+  default     = 8
+}
+variable "business_hours_end" {
+  description = "End hour for ETF price checks (24-hour format)"
+  type        = number
+  default     = 17
+}

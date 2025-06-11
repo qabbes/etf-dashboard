@@ -4,13 +4,28 @@ import boto3
 import json
 import logging
 from datetime import datetime
+import pytz
+import os
 from botocore.exceptions import ClientError
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+paris_time = datetime.now(pytz.timezone("Europe/Paris"))
+hour = paris_time.hour
+
+start_hour = int(os.environ.get("BUSINESS_HOURS_START", 8))  # Default to 8 AM
+end_hour = int(os.environ.get("BUSINESS_HOURS_END", 17))  # Default to 5 PM
+
 
 def lambda_handler(event=None, context=None):
+    if start_hour <= hour <= end_hour:
+        pass  # Continue with execution (the rest of the function)
+    else:
+        print(
+            f"Outside allowed window ({start_hour}-{end_hour}, current hour: {hour}), skipping execution.")
+        return
+
     logger.info("ETF Scraper Lambda function started")
     # Load config
     try:

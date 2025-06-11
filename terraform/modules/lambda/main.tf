@@ -58,6 +58,8 @@ resource "aws_lambda_function" "scraper_lambda" {
   environment {
     variables = {
       BUCKET_NAME = var.bucket_name
+      BUSINESS_HOURS_START = var.business_hours_start
+      BUSINESS_HOURS_END   = var.business_hours_end
     }
   }
   depends_on = [
