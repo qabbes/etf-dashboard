@@ -11,7 +11,7 @@ variable "lambda_function_name" {
 variable "schedule_hours" {
   description = "List of hours (in 24h format) to schedule the Lambda function on weekdays"
   type        = list(number)
-  default     = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+  default = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15] # UTC equivalents of 08–17 CEST To be changed during DST
 }
 
 variable "schedule_minutes" {
