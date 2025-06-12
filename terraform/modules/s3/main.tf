@@ -1,7 +1,17 @@
 resource "aws_s3_bucket" "scraped_etf_data" {
     bucket = var.bucket_name
     force_destroy = true
-    
+}
+resource "aws_s3_bucket_cors_configuration" "cors" {
+  bucket = aws_s3_bucket.scraped_etf_data.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["GET"]
+    allowed_origins = ["http://localhost:5173"] //TODO: Change for production
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
 }
  resource "aws_s3_bucket_server_side_encryption_configuration" "sse" {
   bucket = aws_s3_bucket.scraped_etf_data.id
