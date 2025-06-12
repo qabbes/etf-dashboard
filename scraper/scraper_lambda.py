@@ -26,7 +26,8 @@ def lambda_handler(event=None, context=None):
             f"Outside allowed window ({start_hour}-{end_hour}, current hour: {hour}), skipping execution.")
         return
 
-    logger.info("ETF Scraper Lambda function started")
+    logger.info(
+        "ETF Scraper Lambda function started @{hour} Paris time".format(hour=hour))
     # Load config
     try:
         with open("config.json") as file:
