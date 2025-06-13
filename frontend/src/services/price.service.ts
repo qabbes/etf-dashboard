@@ -1,3 +1,4 @@
+import { formatTimestamp, parseTimestamp } from "@/lib/utils";
 import type { ETFDataPoint } from "@/types/etf.types";
 
 
@@ -20,7 +21,15 @@ export async function fetchPriceData(dataKey : string): Promise<ETFDataPoint[]> 
 
     if (!Array.isArray(data)) throw new Error("Invalid data format");
 
-    return data as ETFDataPoint[];
+    const formattedData = data.map((dataPoint: ETFDataPoint) => ({
+       ...dataPoint,
+      formattedDate: formatTimestamp(dataPoint.timestamp),
+      date: parseTimestamp(dataPoint.timestamp),
+    }));
+    console.log("Formatted price data:", formattedData);
+    
+
+    return formattedData as ETFDataPoint[];
   } catch (err) {
     console.error("Error fetching price data:", err);
     return [];
