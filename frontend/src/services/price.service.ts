@@ -1,15 +1,18 @@
+import type { ETFDataPoint } from "@/types/etf.types";
 
-export type PriceData = {
-    timestamp: string; 
-    price: number; 
-};
 
-const baseUrl = import.meta.env.S3_BUCKET_URL;
 
-export async function fetchPriceData(dataKey : string): Promise<PriceData[]> {
+const baseUrl = import.meta.env.VITE_S3_BUCKET_URL || 'https://scraped-etf-data-qabbes.s3.eu-west-3.amazonaws.com/prices';
+
+export async function fetchPriceData(dataKey : string): Promise<ETFDataPoint[]> {
     
   try {
     const res = await fetch(`${baseUrl}/${dataKey}`);
+    console.log(`Fetching price data from: ${baseUrl}/${dataKey}`);
+
+    if (!baseUrl) {
+      console.warn('S3_BUCKET_URL is undefined, using fallback URL');
+    }
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
@@ -17,7 +20,7 @@ export async function fetchPriceData(dataKey : string): Promise<PriceData[]> {
 
     if (!Array.isArray(data)) throw new Error("Invalid data format");
 
-    return data as PriceData[];
+    return data as ETFDataPoint[];
   } catch (err) {
     console.error("Error fetching price data:", err);
     return [];
