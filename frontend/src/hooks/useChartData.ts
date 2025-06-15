@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchPriceData } from "@/services/price.service";
 import type { DateRange } from "@/lib/utils";
 import type { ETFDataPoint } from "@/types/etf.types";
-import { filterByDateRange, getYAxisDomain } from "@/lib/chartUtils";
+import { filterByDateRange, getYAxisDomain, paddingMap } from "@/lib/chartUtils";
 
 
-export function 
-useChartData(dataKey: string) {
+export function useChartData(dataKey: string) {
   const [timeRange, setTimeRange] = useState<DateRange>("month");
   const [rawData, setRawData] = useState<ETFDataPoint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,10 +23,13 @@ useChartData(dataKey: string) {
       });
   }, [dataKey]);
 
-  const filteredData = filterByDateRange(rawData, timeRange) ?? [];
-
-  const paddingMap = { day: 0.01, week: 0.05, month: 0.09, year: 0.1 };
-  const yDomain = getYAxisDomain(filteredData, paddingMap[timeRange] || 0.05); 
+  const filteredData = useMemo(() => filterByDateRange(rawData, timeRange),
+    [rawData, timeRange]
+  );
+  
+  const yDomain = useMemo(() => getYAxisDomain(filteredData, paddingMap[timeRange] || 0.05),
+    [filteredData, timeRange]
+  );
 
   return {
     rawData,

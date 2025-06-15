@@ -1,7 +1,6 @@
 
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -22,17 +21,17 @@ interface ChartHeaderProps {
 
 const ChartHeader = ({timeRange, setTimeRange}: ChartHeaderProps ) => {
   return (
-    <Card className="pt-0"> 
-        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+    <Card className="flex py-0"> 
+        <CardHeader className="flex items-center gap-2 space-y-0 py-3 sm:flex-row">
             <div className="grid flex-1 gap-1">
-            <CardTitle>Area Chart - Interactive</CardTitle>
-            <CardDescription>
+            <CardTitle>ETF-Dashboard</CardTitle>
+            <CardDescription className="pb-0">
                 Showing ETF price history for the last {timeRange ? timeRange : "period"}.
             </CardDescription>
             </div>
             <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
-                className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex"
+                className="w-[160px] rounded-lg sm:ml-auto sm:flex"
                 aria-label="Select a value"
             >
                 <SelectValue placeholder="Last year" />

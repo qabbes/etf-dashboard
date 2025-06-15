@@ -5,7 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-
 export type DateRange = 'day' | 'week' | 'month' | 'year';
 
 /**

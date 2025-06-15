@@ -1,6 +1,8 @@
 import type { ETFDataPoint } from "@/types/etf.types";
 import type { DateRange } from "./utils";
 
+export const paddingMap = { day: 0.01, week: 0.05, month: 0.09, year: 0.1 };
+
 export function filterByDateRange(data: ETFDataPoint[], range: DateRange): ETFDataPoint[] {
   const daysMap: Record<DateRange, number> = { day: 1, week: 7, month: 30, year: 365 };
   const cutoff = new Date();
