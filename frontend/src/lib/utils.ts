@@ -18,36 +18,35 @@ export function formatTimestamp(timestamp: string, range: DateRange = 'month'): 
     switch (range) {
       case 'day':
         // For hourly view (e.g., "14:30")
-        return d.toLocaleTimeString("fr-FR", {
+        return d.toLocaleTimeString("en-EN", {
           hour: "2-digit",
-          minute: "2-digit",
           hour12: false
         });
       
       case 'week':
         // For daily view with day name (e.g., "Mon 15")
-        return d.toLocaleDateString("fr-FR", {
+        return d.toLocaleDateString("en-EN", {
           weekday: "short",
-          day: "2-digit"
+          day: "2-digit",
         });
       
       case 'month':
         // For monthly view (e.g., "15 Jun")
-        return d.toLocaleDateString("fr-FR", {
-          day: "2-digit",
-          month: "short"
+        return d.toLocaleDateString("en-EN", {
+          month: "short",
+          day: "2-digit"
         });
       
       case 'year':
         // For yearly view (e.g., "Jun 2025")
-        return d.toLocaleDateString("fr-FR", {
+        return d.toLocaleDateString("en-EN", {
           month: "short",
           year: "numeric"
         });
       
       default:
         // Default full format
-        return d.toLocaleDateString("fr-FR", {
+        return d.toLocaleDateString("en-EN", {
           day: "2-digit",
           month: "2-digit",
           year: "numeric",

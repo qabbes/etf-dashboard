@@ -28,19 +28,20 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 
 - [x] Write simple Python Lambda function (dummy data) #TODO
 - [x] Write actual scraping script (think about object storage and data structure)
-- [ ] Configure EventBridge  to trigger Lambda
-- [ ] Add basic logging + output variables
+- [x] Configure EventBridge  to trigger Lambda
+- [x] Add basic logging + output variables
 - [ ] Create an `etl/` folder for data processing logic
 
 ---
 
 ## 🎨 Frontend (Start After Infra MVP)
 
-- [ ] Bootstrap React app (Vite or Next.js)
-- [ ] Setup Tailwind CSS 4
-- [ ] Fetch data from API / mock bucket
-- [ ] Display ETF data table
-- [ ] Create basic dashboard layout
+- [x] Bootstrap React app (Vite or Next.js)
+- [x] Setup Tailwind CSS 4
+- [x] Fetch data from API / mock bucket
+- [x] Display ETF data table
+- [x] Create basic dashboard layout
+- [ ] Add the possiblity to select ETF to Display
 
 ---
 
@@ -61,4 +62,4 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 
 ---
 
-_Last updated: 31-05-2025
+_Last updated: 15-06-2025

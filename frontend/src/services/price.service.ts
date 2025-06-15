@@ -26,9 +26,6 @@ export async function fetchPriceData(dataKey : string): Promise<ETFDataPoint[]> 
       formattedDate: formatTimestamp(dataPoint.timestamp),
       date: parseTimestamp(dataPoint.timestamp),
     }));
-    console.log("Formatted price data:", formattedData);
-    
-
     return formattedData as ETFDataPoint[];
   } catch (err) {
     console.error("Error fetching price data:", err);
