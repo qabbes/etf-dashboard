@@ -72,7 +72,7 @@ def lambda_handler(event=None, context=None):
             continue
 
         price = round(float(price_tag.text.strip()), 3)
-        timestamp = datetime.now().isoformat()
+        timestamp = datetime.now(pytz.timezone("Europe/Paris")).isoformat()
         logger.info(f"Extracted price for {symbol}: {price}")
         new_entry = {"timestamp": timestamp, "price": price}
 
