@@ -1,5 +1,6 @@
-import AsideCard from "@/components/AsideCard";
 import ChartHeader from "@/components/ChartHeader";
+import ChartSkeleton from "@/components/ChartSkeleton";
+import { ModeToggle } from "@/components/ModeToggle";
 import PriceChart from "@/components/PriceChart";
 import { useChartData } from "@/hooks/useChartData";
 import { useState } from "react";
@@ -7,16 +8,28 @@ import { useState } from "react";
 export default function Dashboard() {
 
   const [ticker, setTicker] = useState<string>("ESE.PA.json");
-  const { filteredData, yDomain, timeRange, setTimeRange } = useChartData(ticker);
+  const { filteredData, yDomain, timeRange, setTimeRange, isLoading } = useChartData(ticker);
 
 
   return (
-    <div className="p-4">
-      <ChartHeader timeRange={timeRange} setTimeRange={setTimeRange} />
-      <div className="flex justify-between gap-4 mt-4 [&>*:first-child]:w-3/4 [&>*:last-child]:w-1/4">
-        <PriceChart data={filteredData} ticker={ticker} selectedRange={timeRange} yDomain={yDomain} />
-        <AsideCard tracker={ticker} setTracker={setTicker}/>
+    <>
+      <div className="flex justify-end py-4 px-6">
+        <ModeToggle/>
       </div>
-    </div>
+      <ChartHeader timeRange={timeRange} setTimeRange={setTimeRange} />
+      <div className="flex justify-between gap-4 mt-4">
+        {isLoading ? (
+          <ChartSkeleton />
+        ) : (
+          <PriceChart
+            data={filteredData}
+            ticker={ticker}
+            setTicker={setTicker}
+            selectedRange={timeRange}
+            yDomain={yDomain}
+          />
+        )}
+      </div>
+    </>
   );
 }
