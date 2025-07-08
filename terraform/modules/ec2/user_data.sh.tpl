@@ -1,22 +1,15 @@
 #!/bin/bash
 set -euxo pipefail
 
-# update dependencies
-sudo dnf update -y
-
-# Install Caddy
-sudo dnf install -y 'dnf-command(copr)'
-sudo dnf copr enable @caddy/caddy -y
-sudo dnf install -y caddy
-
 # Create web root
 sudo mkdir -p ${app_path}/dist
+sudo chown -R ec2-user:ec2-user ${app_path}
 
-# Configure Caddy
-sudo cp ${app_path}/Caddyfile /etc/caddy/Caddyfile
-sudo chown root:root /etc/caddy/Caddyfile
-sudo chmod 644 /etc/caddy/Caddyfile
+# Install Caddy
+sudo dnf install -y curl
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/pki/rpm-gpg/RPM-GPG-KEY-caddy-stable
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/rpm.repo' | sudo tee /etc/yum.repos.d/caddy-stable.repo
+sudo dnf install -y caddy
 
-# Enable and start Caddy
+# Enable Caddy
 sudo systemctl enable caddy
-sudo systemctl restart caddy
