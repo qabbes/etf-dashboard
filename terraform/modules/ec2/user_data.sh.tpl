@@ -1,22 +1,16 @@
 #!/bin/bash
 set -euxo pipefail
 
-# Install dependencies
+# update dependencies
 sudo dnf update -y
-sudo dnf install -y git nodejs
-
-# Clone the frontend repo
-git clone ${repo_url} ${app_path}
-cd ${app_path}
-
-# Build the frontend
-npm install
-npm run build
 
 # Install Caddy
 sudo dnf install -y 'dnf-command(copr)'
 sudo dnf copr enable @caddy/caddy -y
 sudo dnf install -y caddy
+
+# Create web root
+sudo mkdir -p ${app_path}/dist
 
 # Configure Caddy
 sudo cp ${app_path}/Caddyfile /etc/caddy/Caddyfile

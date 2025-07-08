@@ -47,7 +47,7 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 
 ## 🌍 Deployment (Optional Phase)
 
-- [ ] Host frontend (Netlify / S3 static site / EC2)
+- [ ] Host frontend (EC2)
 - [ ] Secure Lambda with IAM role
 - [ ] Configure S3 CORS if needed
 - [ ] Add CI/CD pipeline (GitHub Actions)
@@ -56,7 +56,7 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 
 ## 📌 Notes & Ideas
 
-- Consider adding an API Gateway + Lambda combo for React to fetch from
+- Use Terraform output to write the EC2 IP to GitHub Secrets automatically (using tools like Terraform Cloud or GitHub’s OIDC auth)
 - Use S3 Event Notification → Lambda for automatic data ingestion
 - Webhook-based refresh optional for live updates
 
