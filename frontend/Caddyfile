@@ -1,0 +1,4 @@
+etf-tracker.qabbes.me {
+    root * /home/ec2-user/etf-tracker/dist
+    file_server
+}

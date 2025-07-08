@@ -7,8 +7,8 @@ variable "vpc_id" {
   description = "VPC ID"
   type        = string
 }
-variable "ami_id" {
-  description = "AMI ID for EC2 instance"
+variable "ami" {
+  description = "AMI for EC2 instance"
   type        = string
 }
 

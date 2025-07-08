@@ -1,0 +1,6 @@
+project     = "etf-tracker"
+key_name    = "your-key-name"
+my_ip_cidr  = "YOUR.IP.ADD.RESS/32"
+repo_url    = "https://github.com/yourname/your-repo.git"
+app_path    = "/home/ec2-user/app-name"
+sg_name     = "etf-tracker-sg"

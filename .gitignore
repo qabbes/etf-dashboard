@@ -4,6 +4,8 @@ terraform.tfstate
 terraform.tfstate.backup
 *.tfstate.*
 crash.log
+terraform.tfvars
+*.pem
 
 # Lambda files
 scraper_lambda.zip
