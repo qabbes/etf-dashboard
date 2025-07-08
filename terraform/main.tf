@@ -13,13 +13,13 @@ data "aws_subnet" "default" {
   }
 }
 
-data "aws_ami" "amazon_linux" {
+data "aws_ami" "ubuntu_22" {
   most_recent = true
-  owners      = ["amazon"]
+  owners      = ["099720109477"] # Canonical
 
   filter {
     name   = "name"
-    values = ["al2023-ami-*-x86_64"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
   }
 
   filter {
@@ -54,10 +54,9 @@ locals {
   subnet_id = data.aws_subnet.default.id
 }
 
-#TODO Replace with  actual AMI ID and other parameters
 module "ec2_frontend" {
   source        = "./modules/ec2"
-  ami           = data.aws_ami.amazon_linux.id
+  ami           = data.aws_ami.ubuntu_22.id
   instance_type = "t3.micro"
   key_name      = var.key_name
   vpc_id        = data.aws_vpc.default.id

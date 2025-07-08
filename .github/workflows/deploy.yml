@@ -35,4 +35,4 @@ jobs:
         ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
 
         rsync -avz -e "ssh -i ~/.ssh/id_rsa" \
-          ./frontend/dist/ ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/etf-tracker/dist/
+          ./frontend/dist/ ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/home/ubuntu/etf-tracker/dist/
