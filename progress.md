@@ -57,6 +57,7 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 ## 📌 Notes & Ideas
 
 - Use Terraform output to write the EC2 IP to GitHub Secrets automatically (using tools like Terraform Cloud or GitHub’s OIDC auth)
+- Automate the update of security group policies for SSH with GitHub Actions IPs before every deploy
 - Use S3 Event Notification → Lambda for automatic data ingestion
 - Webhook-based refresh optional for live updates
 

@@ -8,7 +8,8 @@ resource "aws_s3_bucket_cors_configuration" "cors" {
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["GET"]
-    allowed_origins = ["http://localhost:5173"] //TODO: Change for production
+    allowed_origins = [ "https://etf-tracker.qabbes.me",
+                        "http://etf-tracker.qabbes.me"] 
     expose_headers  = ["ETag"]
     max_age_seconds = 3000
   }

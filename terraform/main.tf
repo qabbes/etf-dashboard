@@ -6,10 +6,10 @@ data "aws_vpc" "default" {
 
 data "aws_subnet" "default" {
   vpc_id = data.aws_vpc.default.id
-  
-   filter {
+
+  filter {
     name   = "availability-zone"
-    values = ["eu-west-3a"]  
+    values = ["eu-west-3a"]
   }
 }
 

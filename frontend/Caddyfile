@@ -1,4 +1,4 @@
 etf-tracker.qabbes.me {
-    root * /home/ubuntu/etf-tracker/dist
+    root * /home/ubuntu/etf-tracker/frontend/dist
     file_server
 }
