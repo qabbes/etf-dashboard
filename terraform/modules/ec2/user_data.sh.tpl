@@ -5,9 +5,33 @@ set -euxo pipefail
 sudo apt-get update -y
 sudo apt-get install -y curl gnupg2 ca-certificates lsb-release debian-archive-keyring
 
+# Install Node.js
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+# Get specific version
+sudo npm install -g n
+sudo n 20.11.1
+node -v && npm -v 
+
+
 # Create web root
-sudo mkdir -p ${app_path}/dist
+sudo mkdir -p ${app_path}
 sudo chown -R ubuntu:ubuntu ${app_path}
+sudo chmod 755 ${app_path}
+
+# Tell Git to trust this directory 
+export GIT_CONFIG_GLOBAL=/home/ubuntu/.gitconfig
+sudo -u ubuntu bash -c "cd ${app_path} && git init && \
+  git config --global --add safe.directory '${app_path}' && \
+  GIT_CONFIG_SYSTEM=/dev/null git remote add origin ${repo_url} && \
+  GIT_CONFIG_SYSTEM=/dev/null git sparse-checkout init --cone && \
+  GIT_CONFIG_SYSTEM=/dev/null git sparse-checkout set frontend && \
+  GIT_CONFIG_SYSTEM=/dev/null git pull origin main"
+
+# # Install dependencies and build
+cd ${app_path}/frontend
+npm ci
+npm run build
 
 # Install Caddy
 sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
@@ -17,5 +41,8 @@ echo "deb [signed-by=/usr/share/keyrings/caddy-stable-archive-keyring.gpg] https
 sudo apt-get update -y
 sudo apt-get install -y caddy
 
-# Enable Caddy
+sudo cp ${app_path}/frontend/Caddyfile /etc/caddy/Caddyfile
+
+# Restart and enable Caddy
 sudo systemctl enable caddy
+sudo systemctl restart caddy
