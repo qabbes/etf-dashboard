@@ -32,6 +32,8 @@ sudo -u ubuntu bash -c "cd ${app_path} && git init && \
 cd ${app_path}/frontend
 npm ci
 npm run build
+# For future builds, allow ubuntu to modify files to rsync
+sudo chown -R ubuntu:ubuntu /home/ubuntu/etf-tracker/frontend/dist
 
 # Install Caddy
 sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
