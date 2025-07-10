@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,CartesianGrid} from "recharts";
 import AsideCard from "./AsideCard";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import CustomYAxisTick from "./CustomYAxisTick";
 
   interface PriceChartProps {
   data: ETFDataPoint[];
@@ -14,6 +15,8 @@ import { useIsMobile } from "@/hooks/useIsMobile";
   ticker: string;
   setTicker: (value: string) => void;
 }
+
+
 
 
 export default function PriceChart({ data,selectedRange, yDomain, ticker, setTicker }: PriceChartProps) {
@@ -35,20 +38,35 @@ export default function PriceChart({ data,selectedRange, yDomain, ticker, setTic
 
     return (
       <>
-        <div className="w-full md:w-5/7 rounded-xl border bg-background shadow-sm p-2">
-          <div className="flex justify-between items-center mb-4 p-4">
-            <h2 className="text-lg font-semibold mb-4">
-              {selectedETF ? `Price History for ${selectedETF.label}` : ""}
-            </h2>
-            <AsideCard tracker={ticker} setTracker={setTicker} />
-          </div>
+        <div className="w-full rounded-xl border bg-background shadow-sm p-2">
+          {isMobile ? (
+            <div className="flex flex-col justify-between mb-4 p-4">
+              <AsideCard
+                tracker={ticker}
+                setTracker={setTicker}
+                classname="flex items-center justify-center pb-3"
+                isMobile={isMobile}
+              />
+              <h2 className="text-sm text-muted-foreground ">
+                {selectedETF ? `Performance for ${selectedETF.label}` : ""}
+              </h2>
+            </div>
+          ) : (
+            <div className="flex justify-between items-center mb-4 p-4">
+              <h2 className="text-lg font-semibold">
+                {selectedETF ? `Performance for ${selectedETF.label}` : ""}
+              </h2>
+              <AsideCard tracker={ticker} setTracker={setTicker} />
+            </div>
+          )}
+
           <ResponsiveContainer width="100%" height={300}>
             {data.length > 0 ? (
               <AreaChart
                 data={data}
                 margin={
                   isMobile
-                    ? { top: 5, right: 0, bottom: 20, left: -9 }
+                    ? { top: 5, right: 0, bottom: 20, left: 0 }
                     : { top: 5, right: 20, bottom: 20, left: 8 }
                 }>
                 <defs>
@@ -61,7 +79,7 @@ export default function PriceChart({ data,selectedRange, yDomain, ticker, setTic
                     <stop offset="95%" stopColor="var(--color-mobile)" stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid vertical={false} horizontal={true} />
+                <CartesianGrid vertical={false} horizontal={!isMobile} />
                 <XAxis
                   dataKey="timestamp"
                   tickFormatter={(value: string) => formatTimestamp(value, dateRange)}
@@ -71,8 +89,17 @@ export default function PriceChart({ data,selectedRange, yDomain, ticker, setTic
                 <YAxis
                   domain={yDomain}
                   tickFormatter={(value) => value.toFixed(2)}
-                  tickMargin={!isMobile ? 8 : 0}
+                  tick={(props) => (
+                    <CustomYAxisTick
+                      {...props}
+                      isMobile={isMobile}
+                      dy={4}
+                      textAnchor="end"
+                      fill="#666"
+                    />
+                  )}
                   tickLine={!isMobile}
+                  hide={isMobile}
                 />
                 <Tooltip
                   labelFormatter={formatTooltipTimestamp}

@@ -16,6 +16,7 @@ export default function Dashboard() {
       <div className="flex justify-end py-4 px-6">
         <ModeToggle/>
       </div>
+      <div className="w-full md:w-5/7 mx-auto">
       <ChartHeader timeRange={timeRange} setTimeRange={setTimeRange} />
       <div className="flex justify-between gap-4 mt-4">
         {isLoading ? (
@@ -29,6 +30,7 @@ export default function Dashboard() {
             yDomain={yDomain}
           />
         )}
+        </div>
       </div>
     </>
   );

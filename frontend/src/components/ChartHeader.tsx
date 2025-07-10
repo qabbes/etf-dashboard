@@ -21,12 +21,12 @@ interface ChartHeaderProps {
 
 const ChartHeader = ({timeRange, setTimeRange}: ChartHeaderProps ) => {
   return (
-    <Card className="flex py-0"> 
-        <CardHeader className="flex items-center gap-2 space-y-0 py-3 sm:flex-row">
+    <Card> 
+        <CardHeader className="flex items-center gap-2 space-y-0 py-3">
             <div className="grid flex-1 gap-1">
-            <CardTitle>ETF-Dashboard</CardTitle>
+            <CardTitle>ETF Performance Overview</CardTitle>
             <CardDescription className="pb-0">
-                Showing ETF price history for the last {timeRange ? timeRange : "period"}.
+                Analyze the performance of your selected ETF over last {timeRange ? timeRange : "period"}.
             </CardDescription>
             </div>
             <Select value={timeRange} onValueChange={setTimeRange}>
