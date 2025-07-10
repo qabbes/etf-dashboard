@@ -5,6 +5,7 @@ import type { ETFDataPoint } from "@/types/etf.types";
 import { useEffect, useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,CartesianGrid} from "recharts";
 import AsideCard from "./AsideCard";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
   interface PriceChartProps {
   data: ETFDataPoint[];
@@ -17,6 +18,7 @@ import AsideCard from "./AsideCard";
 
 export default function PriceChart({ data,selectedRange, yDomain, ticker, setTicker }: PriceChartProps) {
   const [dateRange, setDateRange] = useState<DateRange>('month');
+  const isMobile = useIsMobile();
   
   
   const selectedETF = TICKER_OPTIONS.find((opt) => opt.value === ticker);
@@ -33,8 +35,8 @@ export default function PriceChart({ data,selectedRange, yDomain, ticker, setTic
 
     return (
       <>
-        <div className="w-3/4 rounded-xl border bg-background shadow-sm p-4">
-          <div className="flex justify-between items-center mb-4">
+        <div className="w-full md:w-5/7 rounded-xl border bg-background shadow-sm p-2">
+          <div className="flex justify-between items-center mb-4 p-4">
             <h2 className="text-lg font-semibold mb-4">
               {selectedETF ? `Price History for ${selectedETF.label}` : ""}
             </h2>
@@ -42,7 +44,13 @@ export default function PriceChart({ data,selectedRange, yDomain, ticker, setTic
           </div>
           <ResponsiveContainer width="100%" height={300}>
             {data.length > 0 ? (
-              <AreaChart data={data} margin={{ top: 5, right: 20, bottom: 20, left: 0 }}>
+              <AreaChart
+                data={data}
+                margin={
+                  isMobile
+                    ? { top: 5, right: 0, bottom: 20, left: -9 }
+                    : { top: 5, right: 20, bottom: 20, left: 8 }
+                }>
                 <defs>
                   <linearGradient id="fillSP500" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="var(--color-desktop)" stopOpacity={0.8} />
@@ -53,14 +61,19 @@ export default function PriceChart({ data,selectedRange, yDomain, ticker, setTic
                     <stop offset="95%" stopColor="var(--color-mobile)" stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid vertical={false} />
+                <CartesianGrid vertical={false} horizontal={true} />
                 <XAxis
                   dataKey="timestamp"
                   tickFormatter={(value: string) => formatTimestamp(value, dateRange)}
                   tickMargin={8}
                   minTickGap={32}
                 />
-                <YAxis domain={yDomain} tickFormatter={(value) => value.toFixed(2)} />
+                <YAxis
+                  domain={yDomain}
+                  tickFormatter={(value) => value.toFixed(2)}
+                  tickMargin={!isMobile ? 8 : 0}
+                  tickLine={!isMobile}
+                />
                 <Tooltip
                   labelFormatter={formatTooltipTimestamp}
                   formatter={(value) => [`${value}€`, "Price"]}
