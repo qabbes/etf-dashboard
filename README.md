@@ -4,7 +4,7 @@ A full-stack application for tracking and visualizing Exchange-Traded Fund (ETF)
 
 ## Project Overview
 
-The ETF Dashboard scrapes ETF data from selected sources, stores the data in AWS S3, and displays it in a user-friendly frontend dashboard. The backend is fully serverless, leveraging AWS Lambda, API Gateway, and S3.
+The ETF Dashboard scrapes ETF data from selected sources, stores the data in AWS S3, and displays it in a user-friendly frontend dashboard hosted on an EC2. The backend is fully serverless, leveraging AWS Lambda and S3.
 
 ## ⚙️ Tech Stack
 
