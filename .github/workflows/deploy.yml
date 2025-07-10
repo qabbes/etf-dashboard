@@ -41,7 +41,7 @@ jobs:
 
         # Deploy only the changed files
         rsync -avz -e "ssh -i ~/.ssh/id_rsa" \
-          ./frontend/dist/ ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/home/ubuntu/etf-tracker/dist/
+          ./frontend/dist/ ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/home/ubuntu/etf-tracker/frontend/dist/
         
         # Restart Caddy to pick up new files (if needed)
         ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_PUBLIC_IP }} "sudo systemctl restart caddy"
