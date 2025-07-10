@@ -9,7 +9,9 @@ resource "aws_s3_bucket_cors_configuration" "cors" {
     allowed_headers = ["*"]
     allowed_methods = ["GET"]
     allowed_origins = [ "https://etf-tracker.qabbes.me",
-                        "http://etf-tracker.qabbes.me"] 
+                        "http://etf-tracker.qabbes.me",
+                        "http://localhost:5173/"
+                        ] 
     expose_headers  = ["ETag"]
     max_age_seconds = 3000
   }
