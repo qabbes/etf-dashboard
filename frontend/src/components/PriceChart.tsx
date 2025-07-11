@@ -7,6 +7,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,CartesianGr
 import AsideCard from "./AsideCard";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import CustomYAxisTick from "./CustomYAxisTick";
+import PerformanceSummary from "./PerformanceSummary";
 
   interface PriceChartProps {
   data: ETFDataPoint[];
@@ -47,15 +48,19 @@ export default function PriceChart({ data,selectedRange, yDomain, ticker, setTic
                 classname="flex items-center justify-center pb-3"
                 isMobile={isMobile}
               />
-              <h2 className="text-sm text-muted-foreground ">
+              <h2 className="text-sm text-muted-foreground">
                 {selectedETF ? `Performance for ${selectedETF.label}` : ""}
               </h2>
+              <PerformanceSummary data={data} selectedRange={selectedRange} />
             </div>
           ) : (
             <div className="flex justify-between items-center mb-4 p-4">
-              <h2 className="text-lg font-semibold">
-                {selectedETF ? `Performance for ${selectedETF.label}` : ""}
-              </h2>
+              <div className="flex flex-col items-start">
+                <h2 className="text-lg font-semibold">
+                  {selectedETF ? `Performance for ${selectedETF.label}` : ""}
+                </h2>
+                <PerformanceSummary data={data} selectedRange={selectedRange} />
+              </div>
               <AsideCard tracker={ticker} setTracker={setTicker} />
             </div>
           )}
