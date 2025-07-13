@@ -30,7 +30,6 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 - [x] Write actual scraping script (think about object storage and data structure)
 - [x] Configure EventBridge  to trigger Lambda
 - [x] Add basic logging + output variables
-- [ ] Create an `etl/` folder for data processing logic
 
 ---
 
@@ -47,10 +46,10 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 
 ## 🌍 Deployment (Optional Phase)
 
-- [ ] Host frontend (EC2)
-- [ ] Secure Lambda with IAM role
-- [ ] Configure S3 CORS if needed
-- [ ] Add CI/CD pipeline (GitHub Actions)
+- [x] Host frontend (EC2)
+- [x] Secure Lambda with IAM role
+- [x] Configure S3 CORS
+- [x] Add CI/CD pipeline (GitHub Actions)
 
 ---
 
@@ -58,8 +57,10 @@ This document tracks progress on building a cloud-native ETF tracker using Terra
 
 - Use Terraform output to write the EC2 IP to GitHub Secrets automatically (using tools like Terraform Cloud or GitHub’s OIDC auth)
 - Automate the update of security group policies for SSH with GitHub Actions IPs before every deploy
-- Use S3 Event Notification → Lambda for automatic data ingestion
+- ADD rate limits on s3 fetch or UI throttling
+
 - Webhook-based refresh optional for live updates
+- Use CDN in front of S3 for caching OR in memory cache (Redis)
 
 ---
 
