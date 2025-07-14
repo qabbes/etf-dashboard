@@ -8,11 +8,10 @@ The ETF Dashboard scrapes ETF data from selected sources, stores the data in AWS
 
 ## ⚙️ Tech Stack
 
-### Backend   ![Logo](https://raw.githubusercontent.com/weibeld/aws-icons-svg/5e0e14e5472f1eefed879d7ea7e1d79652858d14/q1-2022/Architecture-Service-Icons_01312022/Arch_App-Integration/Arch_16/Arch_Amazon-EventBridge_16.svg) ![Logo](https://raw.githubusercontent.com/weibeld/aws-icons-svg/5e0e14e5472f1eefed879d7ea7e1d79652858d14/q1-2022/Architecture-Service-Icons_01312022/Arch_Compute/16/Arch_AWS-Lambda_16.svg) ![Logo](https://raw.githubusercontent.com/weibeld/aws-icons-svg/5e0e14e5472f1eefed879d7ea7e1d79652858d14/q1-2022/Architecture-Service-Icons_01312022/Arch_Storage/16/Arch_Amazon-Simple-Storage-Service_16.svg)  ![Logo](https://raw.githubusercontent.com/weibeld/aws-icons-svg/5e0e14e5472f1eefed879d7ea7e1d79652858d14/q1-2022/Architecture-Service-Icons_01312022/Arch_App-Integration/Arch_16/Arch_%20Amazon-API-Gateway_16.svg) ![Logo](assets/icons/trfrm24.svg)
+### Backend   ![Logo](https://raw.githubusercontent.com/weibeld/aws-icons-svg/5e0e14e5472f1eefed879d7ea7e1d79652858d14/q1-2022/Architecture-Service-Icons_01312022/Arch_App-Integration/Arch_16/Arch_Amazon-EventBridge_16.svg) ![Logo](https://raw.githubusercontent.com/weibeld/aws-icons-svg/5e0e14e5472f1eefed879d7ea7e1d79652858d14/q1-2022/Architecture-Service-Icons_01312022/Arch_Compute/16/Arch_AWS-Lambda_16.svg) ![Logo](https://raw.githubusercontent.com/weibeld/aws-icons-svg/5e0e14e5472f1eefed879d7ea7e1d79652858d14/q1-2022/Architecture-Service-Icons_01312022/Arch_Storage/16/Arch_Amazon-Simple-Storage-Service_16.svg) ![Logo](assets/icons/trfrm24.svg)
 - **AWS EventBridge** - Triggers scraping jobs on schedule
 - **AWS Lambda** – Python-powered web scraper
 - **AWS S3** – Storage for scraped data
-- **AWS API Gateway** – Exposes webhooks or endpoints
 - **Terraform** – Infrastructure as Code for deployment
 
 ### Frontend   ![Logo](https://raw.githubusercontent.com/weibeld/aws-icons-svg/5e0e14e5472f1eefed879d7ea7e1d79652858d14/q1-2022/Architecture-Service-Icons_01312022/Arch_Compute/16/Arch_Amazon-EC2_16.svg) ![Logo](assets/icons/react24.svg)
@@ -27,8 +26,7 @@ The ETF Dashboard scrapes ETF data from selected sources, stores the data in AWS
 
 1. Lambda scrapes ETF data on a schedule or trigger.
 2. Scraped data is saved to an S3 bucket.
-3. S3 triggers a second Lambda to notify the frontend via webhook or update cache.
-4. Frontend dashboard fetches and displays the latest data.
+4. Frontend dashboard fetches and displays the latest data on demand.
 
 
 ## Project Structure
@@ -38,20 +36,19 @@ etf-dashboard/
 ├── bootstrap/                 # For storing tf state and initiate backend S3 setup
 │   └── main.tf
 ├── frontend/                  # React app
-├── backend/                   # Lambda functions
+├── scraper/                   # Lambda functions
 │   ├── scraper/               # Python scraper Lambda
-│   └── notifier/              # S3-triggered Lambda
-├── infrastructure/
+├── terraform/
 │   ├── modules/              # Reusable Terraform modules
 │   │   ├── lambda/
 │   │   ├── s3/
 │   │   ├── eventbridge/
-│   │   ├── api_gateway/
 │   │   └── ec2/
 │   ├── variables.tf          # Global variables
-│   ├── outputs.tf            # Global outputs
+│   ├── backend.tf            # To store the remote state
 │   ├── providers.tf          # Provider config (AWS, region, etc.)
-│   └── main.tf               # Root module 
+│   └── main.tf               # Root module
+├── tools/                    # Helpers scripts
 ├── .gitignore
 └── README.md
 
@@ -84,10 +81,13 @@ terraform apply
 
 ## 🧪 To Do
 
-- [ ]  Add pagination and filtering on frontend
-- [ ]  Implement auto-refresh using webhooks or polling
-- [ ]  Add authentication (JWT)
-- [ ]  Deploy frontend with HTTPS & domain setup (e.g. Route 53 + Caddy/Nginx)
+- [ ]  Add Webhook-based refresh optional for live updates
+- [ ]  Use CDN in front of S3 for caching OR in memory cache (Redis)
+- [ ]  Add rate limits on S3 fetch or UI throttling
+
+### Nice To have
+- [ ]  Use Terraform output to write the EC2 IP to GitHub Secrets automatically (using tools like Terraform Cloud or GitHub’s OIDC auth)
+- [ ]  Automate the update of security group policies for SSH with GitHub Actions IPs before every deploy (separate project) 
 
 ## 📄 License
 
