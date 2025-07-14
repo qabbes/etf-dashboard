@@ -2,20 +2,23 @@
 
 A full-stack application for tracking and visualizing Exchange-Traded Fund (ETF) data in near real-time. Built to showcase web scraping, cloud infrastructure automation with Terraform, and frontend dashboard design.
 
+
 ## Features
 
-- Real-time ETF price updates
-- Serverless architecture with AWS Lambda, S3, etc.
+- Real-time ETF price updates (every hour)
 - Terraform-managed infrastructure
+- Serverless architecture with AWS Lambda, S3.
 
-  ## 🧠 Decision Log
 
-Every major decision I made while building this project is documented in this [ETF Tracker Project Journal]([https://www.notion.so/your-public-link](https://lacy-helicopter-80d.notion.site/19b50889ae4f81fc805bc1fca13aa7df?v=19b50889ae4f8190ae1c000c9640b9ad)).
+## 🧠 Decision Log
+
+Every major decision I made while building this project is documented in this [ETF Tracker Project Journal](https://lacy-helicopter-80d.notion.site/19b50889ae4f81fc805bc1fca13aa7df?v=19b50889ae4f8190ae1c000c9640b9ad).
 
 
 ## Project Overview
 
 The ETF Dashboard scrapes ETF data from selected sources, stores the data in AWS S3, and displays it in a user-friendly frontend dashboard hosted on an EC2. The backend is fully serverless, leveraging AWS Lambda and S3.
+
 
 ## ⚙️ Tech Stack
 
@@ -29,9 +32,11 @@ The ETF Dashboard scrapes ETF data from selected sources, stores the data in AWS
 - **React** – Interactive dashboard UI
 - **Hosted on EC2** – Simplified frontend hosting
 
+
 ## Architecture Diagram
 
 ![ETF Dashboard Architecture2](assets/archx3.svg)
+
 
 ## Data Flow
 
