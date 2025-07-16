@@ -1,39 +1,35 @@
-import { useEffect, useMemo, useState } from "react";
-import { fetchPriceData } from "@/services/price.service";
-import type { DateRange } from "@/lib/utils";
-import type { ETFDataPoint } from "@/types/etf.types";
 import { filterByDateRange, getYAxisDomain, paddingMap } from "@/lib/chartUtils";
+import type { DateRange } from "@/lib/utils";
+import { useEffect, useMemo, useState } from "react";
+import { useETFDataQuery } from "./useETFDataQuery";
 
 
 export function useChartData(dataKey: string) {
   const [timeRange, setTimeRange] = useState<DateRange>("month");
-  const [rawData, setRawData] = useState<ETFDataPoint[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const {data: rawData = [], isLoading} = useETFDataQuery(dataKey);
+  const [animatedData, setAnimatedData] = useState(rawData);
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetchPriceData(dataKey)
-      .then((data) => {
-        setRawData(data);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to load price data:", err);
-        setIsLoading(false);
-      });
-  }, [dataKey]);
-
-  const filteredData = useMemo(() => filterByDateRange(rawData, timeRange),
+    const filteredData = useMemo(
+    () => filterByDateRange(rawData, timeRange),
     [rawData, timeRange]
   );
   
+  // Handle data transitions
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnimatedData(filteredData);
+    }, );
+    return () => clearTimeout(timer);
+  }, [filteredData]);
+
   const yDomain = useMemo(() => getYAxisDomain(filteredData, paddingMap[timeRange] || 0.05),
     [filteredData, timeRange]
   );
 
+
+
   return {
-    rawData,
-    filteredData,
+    filteredData : animatedData,
     yDomain,
     timeRange,
     setTimeRange,
