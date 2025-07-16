@@ -36,8 +36,6 @@ export function formatTooltipTimestamp(timestamp: string): string {
     const prices = data.map((d) => d.price);
     const rawMin = Math.min(...prices);
     const rawMax = Math.max(...prices);
-
-    console.log(`Calculating Y-axis domain: min=${rawMin}, max=${rawMax}, paddingPercent=${paddingPercent}`);
     
      // Calculate padding based on the raw range first
     const rawRange = rawMax - rawMin || rawMin * 0.01 || 1;

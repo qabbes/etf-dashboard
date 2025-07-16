@@ -117,6 +117,9 @@ export default function PriceChart({ data,selectedRange, yDomain, ticker, setTic
                 fill="url(#fillSP500)"
                 fillOpacity={0.2}
                 strokeWidth={2}
+                isAnimationActive={true}
+                animationDuration={900}
+                animationEasing="ease-in-out"
               />
             </AreaChart>
           ) : (
