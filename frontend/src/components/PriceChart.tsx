@@ -15,12 +15,18 @@ import PerformanceSummary from "./PerformanceSummary";
   yDomain: [number, number];
   ticker: string;
   setTicker: (value: string) => void;
+  isLoading: boolean; 
+  rawData?: ETFDataPoint[];
 }
-
-
-
-
-export default function PriceChart({ data,selectedRange, yDomain, ticker, setTicker }: PriceChartProps) {
+export default function PriceChart({
+  data,
+  selectedRange,
+  yDomain,
+  ticker,
+  setTicker,
+  isLoading,
+  rawData,
+}: PriceChartProps) {
   const [dateRange, setDateRange] = useState<DateRange>("month");
   const isMobile = useIsMobile();
 
@@ -50,7 +56,11 @@ export default function PriceChart({ data,selectedRange, yDomain, ticker, setTic
             <h2 className="text-sm text-muted-foreground">
               {selectedETF ? `Performance for ${selectedETF.label}` : ""}
             </h2>
-            <PerformanceSummary data={data} selectedRange={selectedRange} />
+            {rawData?.length === 0 ? (
+              <div className="text-gray-500 text-sm">No data available for this period.</div>
+            ) : (
+              <PerformanceSummary data={data} selectedRange={selectedRange} isLoading={isLoading} />
+            )}
           </div>
         ) : (
           <div className="flex justify-between items-center mb-4 p-4">
@@ -58,7 +68,15 @@ export default function PriceChart({ data,selectedRange, yDomain, ticker, setTic
               <h2 className="text-lg font-semibold">
                 {selectedETF ? `Performance for ${selectedETF.label}` : ""}
               </h2>
-              <PerformanceSummary data={data} selectedRange={selectedRange} />
+              {rawData?.length === 0 ? (
+                <div className="text-gray-500 text-sm">No data available for this period.</div>
+              ) : (
+                <PerformanceSummary
+                  data={data}
+                  selectedRange={selectedRange}
+                  isLoading={isLoading}
+                />
+              )}
             </div>
             <AsideCard tracker={ticker} setTracker={setTicker} />
           </div>
@@ -122,11 +140,13 @@ export default function PriceChart({ data,selectedRange, yDomain, ticker, setTic
                 animationEasing="ease-in-out"
               />
             </AreaChart>
-          ) : (
+          ) : rawData?.length === 0 && !isLoading ? (
             <div className="p-4 text-center">
               No data available for the selected time range. Try selecting a wider range like "week"
               or "month".
             </div>
+          ) : (
+            <></>
           )}
         </ResponsiveContainer>
       </div>

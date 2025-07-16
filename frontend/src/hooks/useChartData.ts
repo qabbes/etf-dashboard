@@ -14,7 +14,7 @@ export function useChartData(dataKey: string) {
     [rawData, timeRange]
   );
   
-  // Handle data transitions
+  // Handle data transitions for smoother chart updates
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimatedData(filteredData);
@@ -29,6 +29,7 @@ export function useChartData(dataKey: string) {
 
 
   return {
+    rawData,
     filteredData : animatedData,
     yDomain,
     timeRange,

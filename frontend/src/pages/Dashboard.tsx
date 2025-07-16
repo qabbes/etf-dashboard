@@ -8,7 +8,8 @@ import { useState } from "react";
 export default function Dashboard() {
 
   const [ticker, setTicker] = useState<string>("ESE.PA.json");
-  const { filteredData, yDomain, timeRange, setTimeRange, isLoading } = useChartData(ticker);
+  const { filteredData, yDomain, timeRange, setTimeRange, isLoading, rawData } =
+    useChartData(ticker);
 
 
   return (
@@ -28,6 +29,8 @@ export default function Dashboard() {
             setTicker={setTicker}
             selectedRange={timeRange}
             yDomain={yDomain}
+            isLoading={isLoading}
+            rawData={rawData}
           />
         )}
         </div>

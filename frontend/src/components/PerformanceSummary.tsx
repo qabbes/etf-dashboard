@@ -6,6 +6,7 @@ import type { ETFDataPoint } from "@/types/etf.types";
 interface Props {
     data: ETFDataPoint[];
     selectedRange?: DateRange;
+    isLoading?: boolean;
 }
 
 function getPerformance(data: ETFDataPoint[]): number | null {
@@ -19,10 +20,9 @@ function getPerformance(data: ETFDataPoint[]): number | null {
 }
   
 
-const PerformanceSummary = ({data, selectedRange}: Props) => {
-	if (!data || data.length === 0) {
-    return <div className="text-gray-500 text-sm">No data available for this period.</div>;
-  }
+const PerformanceSummary = ({data, selectedRange, isLoading}: Props) => {
+  if (isLoading ||!data?.length) return null;
+	
   const lastPrice = data[data.length - 1].price;
   const perf = getPerformance(data);
 
