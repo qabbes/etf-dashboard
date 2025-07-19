@@ -140,8 +140,8 @@ export default function PriceChart({
                 animationEasing="ease-in-out"
               />
             </AreaChart>
-          ) : rawData?.length === 0 && !isLoading ? (
-            <div className="p-4 text-center">
+          ) : data?.length === 0 && !isLoading ? (
+            <div className="p-4 text-center pt-20 text-gray-500">
               No data available for the selected time range. Try selecting a wider range like "week"
               or "month".
             </div>
