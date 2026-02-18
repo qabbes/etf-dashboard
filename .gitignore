@@ -37,3 +37,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Misc
+DOMAIN_SETUP.md
+EC2_DEPLOYMENT_OLD.md
+GITHUB_OIDC_SETUP.md
+MIGRATION_GUIDE.md
