@@ -10,6 +10,7 @@ resource "aws_s3_bucket_cors_configuration" "cors" {
     allowed_methods = ["GET"]
     allowed_origins = [ "https://etf-tracker.qabbes.me",
                         "http://etf-tracker.qabbes.me",
+                        "https://d1ggx0wovvpsel.cloudfront.net",
                         "http://localhost:5173"
                         ] 
     expose_headers  = ["ETag"]
