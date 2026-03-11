@@ -37,6 +37,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.toml
 
 # Misc
 DOMAIN_SETUP.md
