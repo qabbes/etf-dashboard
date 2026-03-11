@@ -3,129 +3,134 @@ from bs4 import BeautifulSoup
 import boto3
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, time
 import pytz
 import os
 from botocore.exceptions import ClientError
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
+# --- Structured logging for CloudWatch ---
+def log(level: str, event: str, **kwargs):
+    print(json.dumps({
+        "level": level,
+        "event": event,
+        "timestamp": datetime.now(pytz.timezone("Europe/Paris")).isoformat(),
+        **kwargs
+    }))
+
+
+# Default to WARNING instead of INFO to reduce noise in CloudWatch.
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
+
+# --- Business hours settings ---
 paris_time = datetime.now(pytz.timezone("Europe/Paris"))
 hour = paris_time.hour
-
 start_hour = int(os.environ.get("BUSINESS_HOURS_START", 8))  # Default to 8 AM
 end_hour = int(os.environ.get("BUSINESS_HOURS_END", 17))  # Default to 5 PM
 
 
 def lambda_handler(event=None, context=None):
-    if start_hour <= hour <= end_hour:
-        pass  # Continue with execution (the rest of the function)
-    else:
-        print(
-            f"Outside allowed window ({start_hour}-{end_hour}, current hour: {hour}), skipping execution.")
+    lambda_start = time.monotonic()
+
+    if not (start_hour <= hour <= end_hour):
+        log("INFO", "outside_business_hours",
+            current_hour=hour,
+            window=f"{start_hour}-{end_hour}")
         return
 
-    logger.info(
-        "ETF Scraper Lambda function started @{hour} Paris time".format(hour=hour))
+    log("INFO", "scraping_start", hour=hour)
+
     # Load config
     try:
         with open("config.json") as file:
             config = json.load(file)
-        logger.info(
-            f"Loaded config with {len(config['symbols'])} tickers to process")
+        log("INFO", "config_loaded", ticker_count=len(config["symbols"]))
+
     except Exception as e:
-        logger.error(f"Failed to load config: {e}")
+        log("ERROR", "config_load_failed", error=str(e))
         return {"status": "error", "message": "Config loading failed"}
 
     s3 = boto3.client("s3")
     s3_bucket = config["s3_bucket"]
     s3_prefix = config["s3_prefix"]
-    logger.info(f"Using S3 bucket: {s3_bucket}, prefix: {s3_prefix}")
 
     results = []
+    success_count = 0
+    error_count = 0
     last_entry_count = 0
 
     for entry in config["symbols"]:
         symbol = entry["symbol"]
         url = entry["url"]
         key = f"{s3_prefix}/{symbol}.json"
-        headers = {"User-Agent": "Mozilla/5.0"}
-        logger.info(f"Processing ticker: {symbol}, URL: {url}")
+        ticker_start = time.monotonic()
+        log("INFO", "ticker_start", symbol=symbol)
 
+        # Fetch page
         try:
-            logger.debug(f"Requesting URL: {url}")
-            response = requests.get(url, headers=headers)
+            response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             response.raise_for_status()
         except requests.RequestException as e:
-            logger.error(f"Failed to fetch {symbol}: {e}")
+            log("ERROR", "fetch_failed", symbol=symbol, error=str(e), duration_ms=int((time.monotonic() - ticker_start) * 1000))
             results.append({symbol: f"Failed to fetch: {e}"})
+            error_count += 1
             continue
 
+        # Parse price
         soup = BeautifulSoup(response.text, "html.parser")
         price_tag = soup.find("span", class_=entry["price_selector_class"])
         if not price_tag:
-            logger.error(
-                f"Price tag not found for {symbol} "
-                f"using selector: {entry['price_selector_class']}")
+            log("ERROR", "price_tag_not_found", symbol=symbol, selector=entry["price_selector_class"])
             results.append({symbol: "Price tag not found"})
+            error_count += 1
             continue
 
         price = round(float(price_tag.text.strip()), 3)
         timestamp = datetime.now(pytz.timezone("Europe/Paris")).isoformat()
-        logger.info(f"Extracted price for {symbol}: {price}")
         new_entry = {"timestamp": timestamp, "price": price}
 
-        # Try to get existing data
+        # Read existing S3 data
         try:
             logger.debug(f"Fetching existing data for {symbol} from S3")
             response_obj = s3.get_object(Bucket=s3_bucket, Key=key)
-            existing_data = json.loads(
-                response_obj['Body'].read().decode('utf-8'))
-            entries_count = len(existing_data) if isinstance(
-                existing_data, list) else 1
-            logger.info(
-                f"Found existing data for {symbol} with {entries_count} entries")
-
-            # If it's already an array, append to it
-            if isinstance(existing_data, list):
-                existing_data.append(new_entry)
-                logger.debug(
-                    f"Appended new entry to existing array for {symbol}")
-            else:
-                existing_data = [existing_data, new_entry]
-                logger.debug(
-                    f"Created new array with existing entry and new entry for {symbol}")
-
-            last_entry_count = len(existing_data)
+            existing_data = json.loads(response_obj['Body'].read().decode('utf-8'))
+            existing_data = existing_data if isinstance(existing_data, list) else [existing_data]
+            existing_data.append(new_entry)
+            log("INFO", "s3_read_success", symbol=symbol, existing_entries=len(existing_data) - 1)
 
         except ClientError as e:
             if e.response["Error"]["Code"] == "NoSuchKey":
-                logger.info(
-                    f"No existing data found for {symbol}, creating new array")
+                log("INFO", "s3_ticker_new_file", symbol=symbol)
                 existing_data = [new_entry]
-                last_entry_count = 1
             else:
-                logger.error(f"Failed to read S3 for {symbol}: {e}")
+                log("ERROR", "s3_read_failed", symbol=symbol, error=str(e))
                 results.append({symbol: f"Failed to read S3: {e}"})
+                error_count += 1
                 continue
 
-        # Upload updated data back to S3
+            last_entry_count = len(existing_data)
+
+        # Upload updated data to S3
         try:
-            logger.debug(f"Uploading updated data for {symbol} to S3")
             s3.put_object(
                 Bucket=s3_bucket,
                 Key=key,
                 Body=json.dumps(existing_data),
                 ContentType="application/json"
             )
-            logger.info(f"Successfully updated {symbol} with price: {price}")
+            duration_ms = int((time.monotonic() - ticker_start) * 1000)
+            log("INFO", "ticker_success", symbol=symbol, price=price, total_entries=last_entry_count, duration_ms=duration_ms)
             results.append({symbol: f"Success ({price})"})
+            success_count += 1
         except Exception as e:
-            logger.error(f"Failed to upload data for {symbol}: {e}")
+            log("ERROR", "s3_write_failed", symbol=symbol, error=str(e))
             results.append({symbol: f"Failed to upload: {e}"})
+            error_count += 1
 
-    logger.info(f"ETF Scraper completed processing {len(results)} tickers")
+    total_ms = int((time.monotonic() - lambda_start) * 1000)
+    log("INFO", "scraping_complete", total_tickers=len(results), success_count=success_count, error_count=error_count, duration_ms=total_ms)
+
     return {
         "status": "success",
         "summary": results,
