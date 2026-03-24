@@ -53,3 +53,21 @@ variable "frontend_domain_name" {
   type        = string
   default     = "etf-tracker.qabbes.me"
 }
+
+variable "alert_email" {
+  description = "Email address for CloudWatch alarm notifications"
+  type      = string
+  sensitive = true
+}
+
+variable "error_threshold" {
+  description = "The threshold for triggering an alert (e.g., error count)"
+  type        = number
+  default     = 1
+}
+
+variable "time_limit_ms" {
+    description = "The execution time limit for the lambda function in milliseconds"
+    type        = number
+    default     = 15000
+}

@@ -55,6 +55,16 @@ module "etf_scraper_eventbridge" {
   lambda_function_name = module.etf_scraper_lambda.lambda_function_name
 }
 
+#----------------- Monitoring module (CloudWatch + SNS) -----------------#
+module "monitoring" {
+  source          = "./modules/monitoring"
+  log_group_name  = module.etf_scraper_lambda.lambda_log_group_name
+  lambda_name     = module.etf_scraper_lambda.lambda_function_name
+  error_threshold = var.error_threshold
+  time_limit_ms   = var.time_limit_ms
+  alert_email     = var.alert_email
+}
+
 #----------------- Static Website Hosting ---------------#
 
 # S3 bucket for static website hosting
