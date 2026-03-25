@@ -63,6 +63,7 @@ module "monitoring" {
   error_threshold = var.error_threshold
   time_limit_ms   = var.time_limit_ms
   alert_email     = var.alert_email
+  region          =  var.region
 }
 
 #----------------- Static Website Hosting ---------------#

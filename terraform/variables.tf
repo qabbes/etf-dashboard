@@ -71,3 +71,9 @@ variable "time_limit_ms" {
     type        = number
     default     = 15000
 }
+
+variable "region" {
+  description = "AWS region for the resources"
+  type        = string
+  default     = "eu-west-3"
+}

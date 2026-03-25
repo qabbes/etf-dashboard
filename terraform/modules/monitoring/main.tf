@@ -75,3 +75,92 @@ resource "aws_cloudwatch_metric_alarm" "scraper_duration_alarm" {
   threshold   = var.time_limit_ms
   alarm_actions = [aws_sns_topic.etf_scraper_alerts.arn]
 }
+
+#------------------ CloudWatch Dashboard -----------------#
+resource "aws_cloudwatch_dashboard" "etf_scraper" {
+  dashboard_name = "etf-scraper-dashboard"
+  dashboard_body = jsonencode({
+    "widgets": [
+        {
+            "type": "metric",
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "etf-scraper", "ScraperDuration", { "region": var.region } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": var.region,
+                "title": "Scraper Duration (ms)",
+                "stat": "Average",
+                "period": 300,
+                "yAxis": {
+                    "left": {
+                        "showUnits": false,
+                        "label": ""
+                    },
+                    "right": {
+                        "showUnits": true
+                    }
+                },
+                "start": "-PT14H",
+                "end": "P0D"
+            }
+        },
+        {
+            "type": "metric",
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "etf-scraper", "ScraperSuccessCount", { "region": var.region, "label": "ScraperSuccessCount" } ]
+                ],
+                "view": "gauge",
+                "region": var.region,
+                "title": "Scraper Success",
+                "setPeriodToTimeRange": true,
+                "stacked": true,
+                "stat": "Sum",
+                "period": 300,
+                "yAxis": {
+                    "left": {
+                        "min": 0,
+                        "max": 20
+                    }
+                },
+                "legend": {
+                    "position": "bottom"
+                }
+            }
+        },
+        {
+            "type": "metric",
+            "x": 12,
+            "y": 0,
+            "width": 6,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "etf-scraper", "ScraperErrorCount", { "color": "#d62728", "region": var.region } ]
+                ],
+                "view": "gauge",
+                "region": var.region,
+                "setPeriodToTimeRange": true,
+                "stat": "Sum",
+                "yAxis": {
+                    "left": {
+                        "min": 0,
+                        "max": 1
+                    }
+                },
+                "title": "Scraper Errors"
+            }
+        }
+    ]
+  })
+}
