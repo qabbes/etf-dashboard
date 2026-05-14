@@ -2,7 +2,7 @@
   "symbols": [
     {
       "symbol": "ESE.PA",
-      "url": "https://www.boursedirect.fr/fr/marche/euronext-paris/theam-easyetf-bnp-paribas-easy-FR0011550185-ESE-EUR-XPAR/seance",
+      "url": "https://www.boursedirect.fr/fr/marche/euronext-paris/bnp-paribas-easy-s-p-500-ucits-FR0011550185-ESE-EUR-XPAR/seance",
       "price_selector_class": "quotation-last bd-streaming-select-value-last"
     },
     {
