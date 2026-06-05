@@ -1,5 +1,7 @@
 locals {
   lambda_zip_path = "${path.module}/../../../scraper/scraper_lambda.zip"
+  layer1_zip_path = "${path.module}/../../../scraper/layer1.zip"
+  layer2_zip_path = "${path.module}/../../../scraper/layer2.zip"
 }
 
 resource "aws_iam_role" "lambda_role" {
@@ -50,6 +52,21 @@ resource "aws_cloudwatch_log_group" "this" {
   retention_in_days = 14
 }
 
+# Create dependencies layers
+resource "aws_lambda_layer_version" "deps_layer1" {
+  filename            = local.layer1_zip_path
+  layer_name          = "etf_scraper_deps_layer1"
+  compatible_runtimes = ["python3.11"]
+  source_code_hash    = filebase64sha256(local.layer1_zip_path)
+}
+
+resource "aws_lambda_layer_version" "deps_layer2" {
+  filename            = local.layer2_zip_path
+  layer_name          = "etf_scraper_deps_layer2"
+  compatible_runtimes = ["python3.11"]
+  source_code_hash    = filebase64sha256(local.layer2_zip_path)
+}
+
 # Create the scraper Lambda function
 resource "aws_lambda_function" "scraper_lambda" {
   function_name    = var.lambda_function_name
@@ -68,8 +85,15 @@ resource "aws_lambda_function" "scraper_lambda" {
       BUSINESS_HOURS_END   = var.business_hours_end
     }
   }
+
+  layers = [
+    aws_lambda_layer_version.deps_layer1.arn,
+    aws_lambda_layer_version.deps_layer2.arn,
+  ]
+
   depends_on = [
     aws_iam_role_policy_attachment.lambda_execution_role_attachment,
     aws_iam_role_policy_attachment.lambda_s3_policy_attachment
   ]
 }
+

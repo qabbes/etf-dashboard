@@ -9,6 +9,10 @@ terraform.tfvars
 
 # Lambda files
 scraper_lambda.zip
+layer1.zip
+layer2.zip
+layer1/
+layer2/
 
 # Frontend/Node.js
 # Logs
