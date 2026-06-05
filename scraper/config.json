@@ -1,15 +1,8 @@
 {
+"yahoo_base_url": "https://query1.finance.yahoo.com/v8/finance/chart/",
   "symbols": [
-    {
-      "symbol": "ESE.PA",
-      "url": "https://www.boursedirect.fr/fr/marche/euronext-paris/bnp-paribas-easy-s-p-500-ucits-FR0011550185-ESE-EUR-XPAR/seance",
-      "price_selector_class": "quotation-last bd-streaming-select-value-last"
-    },
-    {
-      "symbol": "CSX5.AS",
-      "url": "https://www.boursedirect.fr/fr/marche/euronext-amsterdam/ishares-core-euro-stoxx-50-uci-IE00B53L3W79-CSX5-EUR-XAMS/seance",
-      "price_selector_class": "quotation-last bd-streaming-select-value-last"
-    }
+    {"symbol": "ESE.PA"},
+    {"symbol": "CSX5.AS"}
   ],
   "s3_bucket": "scraped-etf-data-qabbes",
   "s3_prefix": "prices"

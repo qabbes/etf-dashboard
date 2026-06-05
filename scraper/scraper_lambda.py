@@ -1,9 +1,8 @@
-import requests
-from bs4 import BeautifulSoup
+import yfinance as yf
 import boto3
 import json
-import logging
-from datetime import datetime, time
+from datetime import datetime
+import time
 import pytz
 import os
 from botocore.exceptions import ClientError
@@ -19,10 +18,6 @@ def log(level: str, event: str, **kwargs):
     }))
 
 
-# Default to WARNING instead of INFO to reduce noise in CloudWatch.
-logger = logging.getLogger()
-logger.setLevel(logging.WARNING)
-
 # --- Business hours settings ---
 paris_time = datetime.now(pytz.timezone("Europe/Paris"))
 hour = paris_time.hour
@@ -30,6 +25,7 @@ start_hour = int(os.environ.get("BUSINESS_HOURS_START", 8))  # Default to 8 AM
 end_hour = int(os.environ.get("BUSINESS_HOURS_END", 17))  # Default to 5 PM
 
 
+#--- Main Lambda handler ---
 def lambda_handler(event=None, context=None):
     lambda_start = time.monotonic()
 
@@ -58,41 +54,33 @@ def lambda_handler(event=None, context=None):
     results = []
     success_count = 0
     error_count = 0
-    last_entry_count = 0
+    base_url = config["yahoo_base_url"]
 
     for entry in config["symbols"]:
         symbol = entry["symbol"]
-        url = entry["url"]
+        url = f"{base_url}{symbol}"
         key = f"{s3_prefix}/{symbol}.json"
         ticker_start = time.monotonic()
         log("INFO", "ticker_start", symbol=symbol)
 
-        # Fetch page
+        # Fetch API data
         try:
-            response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
-            response.raise_for_status()
-        except requests.RequestException as e:
-            log("ERROR", "fetch_failed", symbol=symbol, error=str(e), duration_ms=int((time.monotonic() - ticker_start) * 1000))
+            ticker = yf.Ticker(symbol)
+            price = round(ticker.fast_info.last_price, 3)
+        except Exception as e:
+            log("ERROR", "fetch_failed", symbol=symbol, error=str(e),
+                duration_ms=int((time.monotonic() - ticker_start) * 1000))
             results.append({symbol: f"Failed to fetch: {e}"})
             error_count += 1
             continue
 
-        # Parse price
-        soup = BeautifulSoup(response.text, "html.parser")
-        price_tag = soup.find("span", class_=entry["price_selector_class"])
-        if not price_tag:
-            log("ERROR", "price_tag_not_found", symbol=symbol, selector=entry["price_selector_class"])
-            results.append({symbol: "Price tag not found"})
-            error_count += 1
-            continue
-
-        price = round(float(price_tag.text.strip()), 3)
-        timestamp = datetime.now(pytz.timezone("Europe/Paris")).isoformat()
-        new_entry = {"timestamp": timestamp, "price": price}
+        new_entry = {
+            "timestamp": datetime.now(pytz.timezone("Europe/Paris")).isoformat(),
+            "price": price
+        }
 
         # Read existing S3 data
         try:
-            logger.debug(f"Fetching existing data for {symbol} from S3")
             response_obj = s3.get_object(Bucket=s3_bucket, Key=key)
             existing_data = json.loads(response_obj['Body'].read().decode('utf-8'))
             existing_data = existing_data if isinstance(existing_data, list) else [existing_data]
@@ -109,8 +97,6 @@ def lambda_handler(event=None, context=None):
                 error_count += 1
                 continue
 
-            last_entry_count = len(existing_data)
-
         # Upload updated data to S3
         try:
             s3.put_object(
@@ -120,8 +106,8 @@ def lambda_handler(event=None, context=None):
                 ContentType="application/json"
             )
             duration_ms = int((time.monotonic() - ticker_start) * 1000)
-            log("INFO", "ticker_success", symbol=symbol, price=price, total_entries=last_entry_count, duration_ms=duration_ms)
-            results.append({symbol: f"Success ({price})"})
+            log("INFO", "ticker_success", symbol=symbol, price=new_entry["price"], total_entries=len(existing_data), duration_ms=duration_ms)
+            results.append({symbol: f"Success ({new_entry['price']})"})
             success_count += 1
         except Exception as e:
             log("ERROR", "s3_write_failed", symbol=symbol, error=str(e))
@@ -134,6 +120,7 @@ def lambda_handler(event=None, context=None):
     return {
         "status": "success",
         "summary": results,
-        "timestamp": timestamp,
-        "entry_count": last_entry_count
+        "timestamp": datetime.now(pytz.timezone("Europe/Paris")).isoformat(),
+        "success_count": success_count,
+        "error_count": error_count,
     }
